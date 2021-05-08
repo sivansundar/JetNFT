@@ -10,8 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
-import com.sivan.jetnft.screens.Home
-import com.sivan.jetnft.screens.HomeRootView
+import com.sivan.jetnft.screens.*
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 
 class MainActivity : ComponentActivity() {
@@ -91,16 +90,16 @@ private fun MainScreenNavigationConfigurations(
             //Navigate(navController, BottomNavigationScreens.Home.route)
         }
         composable(BottomNavigationScreens.Favourites.route) {
-            Home("Fav")
-            Navigate(navController, BottomNavigationScreens.Favourites.route)
+            FavouritesComposeRootView()
+            //Navigate(navController, BottomNavigationScreens.Favourites.route)
         }
         composable(BottomNavigationScreens.Transactions.route) {
-            Home("Transactions")
-            Navigate(navController, BottomNavigationScreens.Transactions.route)
+            TransactionsComposeRootView()
+            //Navigate(navController, BottomNavigationScreens.Transactions.route)
         }
         composable(BottomNavigationScreens.Profile.route) {
-            Home("Profile")
-            Navigate(navController, BottomNavigationScreens.Profile.route)
+            ProfileComposeRootview()
+            //Navigate(navController, BottomNavigationScreens.Profile.route)
         }
     }
 }
