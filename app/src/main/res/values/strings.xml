@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">JetNFT</string>
+    <string name="home">Home</string>
+    <string name="favourites">Favourites</string>
+    <string name="title_activity_home">Home</string>
+    <string name="title_activity_favourites_compose">FavouritesCompose</string>
+    <string name="title_activity_transactions_compose">TransactionsCompose</string>
+    <string name="title_activity_profile_compose">ProfileCompose</string>
+    <string name="profile">Profile</string>
+    <string name="transactions">Transactions</string>
+</resources>
