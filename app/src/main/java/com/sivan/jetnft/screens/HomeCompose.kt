@@ -18,6 +18,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.material.color.MaterialColors
 import com.sivan.jetnft.R
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 
@@ -36,12 +37,19 @@ class HomeCompose : ComponentActivity() {
 
 @Composable
 fun HomeRootView() {
-    Surface(color = MaterialTheme.colors.background, modifier = Modifier.fillMaxSize()) {
+    val LightWhite = Color(0xFFF2F2F7)
+    val Black200 = Color(0xFF000000)
+
+    Surface(modifier = Modifier.fillMaxSize(),
+        color = if (MaterialTheme.colors.isLight) LightWhite else Black200) {
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)) {
             CustomAppBar()
-            Home("Android")
+            Spacer(modifier = Modifier.height(24.dp))
+
+            NFTCard()
+
         }
 
     }
@@ -56,7 +64,8 @@ fun CustomAppBar() {
 
     ) {
         Row(modifier = Modifier.align(alignment = Alignment.TopEnd)) {
-            ProfileButton()
+            ProfileButton(R.drawable.user_image,
+                Modifier.wrapContentSize().clip(CircleShape))
         }
 
     }
@@ -64,15 +73,15 @@ fun CustomAppBar() {
 }
 
 @Composable
-fun ProfileButton() {
+fun ProfileButton(image_id : Int, modifier: Modifier) {
 
 
-    Card(modifier = Modifier.wrapContentSize(),
-        shape = CircleShape,
+    Card(modifier = modifier,
+
         elevation = 12.dp) {
 
         Image(
-            painter = painterResource(id = R.drawable.user_image) ,
+            painter = painterResource(id = image_id) ,
             contentScale = ContentScale.Crop,
             contentDescription = "Back button",
             modifier = Modifier
