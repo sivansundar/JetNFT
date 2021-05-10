@@ -3,11 +3,18 @@ package com.sivan.jetnft
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.sivan.jetnft.screens.*
@@ -58,14 +65,17 @@ private fun NFTAppBottomNavigation(
     navController: NavHostController,
     items: List<BottomNavigationScreens>
 ) {
-    BottomNavigation {
+    BottomNavigation(
+        modifier = Modifier.padding(36.dp).clip(shape = RoundedCornerShape(26.dp)),
+
+    ) {
         val currentRoute = currentRoute(navController)
         items.forEach { screen ->
             BottomNavigationItem(
                 icon = { Icon(imageVector = screen.icon, contentDescription = "Bottom Nav Icon") },
-                label = { Text(stringResource(id = screen.resourceId)) },
+                //label = { Text(stringResource(id = screen.resourceId)) },
                 selected = currentRoute == screen.route,
-                alwaysShowLabel = false, // This hides the title for the unselected items
+                alwaysShowLabel = false,// This hides the title for the unselected items
                 onClick = {
                     // This if check gives us a "singleTop" behavior where we do not create a
                     // second instance of the composable if we are already on that destination
@@ -73,7 +83,8 @@ private fun NFTAppBottomNavigation(
 
                         navController.navigate(screen.route)
                     }
-                }
+                },
+
             )
         }
     }

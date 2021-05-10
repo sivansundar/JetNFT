@@ -41,7 +41,7 @@ fun HomeRootView() {
     val Black200 = Color(0xFF000000)
 
     Surface(modifier = Modifier.fillMaxSize(),
-        color = if (MaterialTheme.colors.isLight) LightWhite else Black200) {
+        color = if (MaterialTheme.colors.isLight) LightWhite else MaterialTheme.colors.background) {
         Column(modifier = Modifier
             .fillMaxSize()
             .padding(24.dp)) {
@@ -65,7 +65,9 @@ fun CustomAppBar() {
     ) {
         Row(modifier = Modifier.align(alignment = Alignment.TopEnd)) {
             ProfileButton(R.drawable.user_image,
-                Modifier.wrapContentSize().clip(CircleShape))
+                Modifier
+                    .wrapContentSize()
+                    .clip(CircleShape))
         }
 
     }
@@ -76,7 +78,37 @@ fun CustomAppBar() {
 fun ProfileButton(image_id : Int, modifier: Modifier) {
 
 
-    Card(modifier = modifier,
+    Card(modifier = Modifier.wrapContentSize(),
+        elevation = 8.dp,
+        shape = CircleShape) {
+
+        Image(
+            painter = painterResource(id = R.drawable.user_image),
+            contentDescription = "Back button",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(36.dp)
+                .background(Color.White, CircleShape)
+
+            // .border(border = BorderStroke(2.dp, Color.Gray), shape = CircleShape)// clip to the circle shape
+            // add a border (optional)
+        )
+
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PriceSectionPreview() {
+    PriceSection(image_id = R.drawable.ethereum_icon)
+}
+
+@Composable
+fun PriceSection(image_id : Int) {
+
+
+    Card(modifier = Modifier.wrapContentSize(),
 
         elevation = 12.dp) {
 
@@ -87,7 +119,7 @@ fun ProfileButton(image_id : Int, modifier: Modifier) {
             modifier = Modifier
                 .size(36.dp)
                 .background(Color.White, CircleShape)
-               // .border(border = BorderStroke(2.dp, Color.Gray), shape = CircleShape)// clip to the circle shape
+            // .border(border = BorderStroke(2.dp, Color.Gray), shape = CircleShape)// clip to the circle shape
             // add a border (optional)
         )
 
