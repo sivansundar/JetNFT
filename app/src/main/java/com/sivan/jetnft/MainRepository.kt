@@ -82,7 +82,7 @@ class MainRepository(
                 creatorId = 1,
                 current_bid = 1.250,
                 nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
-                nftImage = "https://drive.google.com/file/d/1etQuK5rJLpuv8-vPfnPCHQcT4dica4N_/view?usp=sharing",
+                nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
                 created_at = ZonedDateTime.now(),
                 updated_at = ZonedDateTime.now()
             ),
@@ -93,7 +93,7 @@ class MainRepository(
                 creatorId = 2,
                 current_bid = 1.250,
                 nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
-                nftImage = "https://drive.google.com/file/d/16A2WzHxYm616bQOpg0Fp0GztACXEoMPx/view?usp=sharing",
+                nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_4.jpg",
                 created_at = ZonedDateTime.now(),
                 updated_at = ZonedDateTime.now()
             )

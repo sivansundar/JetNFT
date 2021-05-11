@@ -1,5 +1,6 @@
 package com.sivan.jetnft.screens
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -23,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.coil.rememberCoilPainter
+import com.google.accompanist.imageloading.ImageLoadState
 import com.sivan.jetnft.R
 import com.sivan.jetnft.database.entity.NFTCacheEntity
+import com.sivan.jetnft.database.model.NFTModel
 
 
 @Composable
@@ -51,19 +54,37 @@ fun NFTList(list: List<NFTCacheEntity>?) {
         val context = LocalContext.current
 
         //Toast.makeText(context, "List : ${item.nftName}", Toast.LENGTH_SHORT).show()
+        val nftItemCopy = item.copy()
+        val nftModel = NFTModel(
+            id = nftItemCopy.id,
+            nftName = nftItemCopy.nftName,
+            nftDescription = nftItemCopy.nftDescription,
+            nftImage = nftItemCopy.nftImage,
+            current_bid = nftItemCopy.current_bid,
+            creatorId = nftItemCopy.creatorId,
+            updated_at = nftItemCopy.updated_at,
+            created_at = nftItemCopy.created_at
+        )
 
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
+                .clickable { context.startActivity(Intent(context, NFTActivity::class.java)
+                    .putExtra("nft_model", nftModel)) }
                 ,
             elevation = 36.dp
         ) {
 
             Surface() {
                 Column {
-                    NFTImageCard(item.nftImage)
+                    NFTImageCard(image = item.nftImage,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .padding(24.dp)
+                    )
                     //Spacer(modifier = Modifier.height(18.dp))
                     Text(
                         text = item.nftName,
@@ -210,20 +231,30 @@ fun CreatorCardPreview(){
 }
 
 @Composable
-fun NFTImageCard(image : String) {
-
+fun NFTImageCard(image : String, modifier: Modifier) {
+    val painter = rememberCoilPainter(request = image)
     Card(elevation = 24.dp,
-    modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp)
-        .padding(24.dp)
-        ) {
+    modifier = modifier) {
         Column() {
-            Image(painter = rememberCoilPainter(request = image),
+            Image(painter = painter,
                 contentDescription = "nft image",
                 contentScale = ContentScale.Crop, modifier = Modifier
                     .fillMaxSize()
                     )
+
+            when(painter.loadState) {
+                ImageLoadState.Loading -> {
+                    // Display a circular progress indicator whilst loading
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colors.primary,
+                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
+                }
+
+                is ImageLoadState.Error -> {
+                    // If
+                // you wish to display some content if the request fails
+                }
+            }
         }
     }
 
@@ -236,7 +267,12 @@ fun NFTImageCard(image : String) {
 @Composable
 fun NFTImageCardPreview(){
     val sample = "https://drive.google.com/file/d/16A2WzHxYm616bQOpg0Fp0GztACXEoMPx/view?usp=sharing"
-    NFTImageCard(sample)
+    val modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .padding(24.dp)
+
+    NFTImageCard(sample, modifier)
 }
 
 @Preview(showBackground = true)
