@@ -4,30 +4,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.sivan.jetnft.screens.*
 import com.sivan.jetnft.ui.theme.JetNFTTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JetNFTTheme {
+                val mainViewModel: MainViewModel = viewModel()
+
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colors.background) {
-                    MainScreen()
+                    MainScreen(mainViewModel)
                 }
             }
         }
@@ -35,7 +39,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(mainViewModel: MainViewModel) {
 
     val navController = rememberNavController()
 
@@ -50,7 +54,9 @@ fun MainScreen() {
             NFTAppBottomNavigation(navController, bottomNavigationItems)
         },
     ) {
-        MainScreenNavigationConfigurations(navController)
+
+            MainScreenNavigationConfigurations(navController, mainViewModel)
+
     }
 }
 
@@ -66,7 +72,9 @@ private fun NFTAppBottomNavigation(
     items: List<BottomNavigationScreens>
 ) {
     BottomNavigation(
-        modifier = Modifier.padding(36.dp).clip(shape = RoundedCornerShape(26.dp)),
+        modifier = Modifier
+            .padding(36.dp)
+            .clip(shape = RoundedCornerShape(26.dp)),
 
     ) {
         val currentRoute = currentRoute(navController)
@@ -93,11 +101,14 @@ private fun NFTAppBottomNavigation(
 
 @Composable
 private fun MainScreenNavigationConfigurations(
-    navController: NavHostController
+    navController: NavHostController,
+    mainViewModel: MainViewModel
 ) {
     NavHost(navController, startDestination = BottomNavigationScreens.Home.route) {
+       // val exampleViewModel = viewModel(HiltViewModelFactory(LocalContext.current, navController))<MainViewModel>()
+
         composable(BottomNavigationScreens.Home.route) {
-            HomeRootView()
+            HomeRootView(mainViewModel)
             //Navigate(navController, BottomNavigationScreens.Home.route)
         }
         composable(BottomNavigationScreens.Favourites.route) {
@@ -120,10 +131,10 @@ fun Navigate(navController: NavHostController, route: String) {
     navController.navigate(route)
 }
 
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    JetNFTTheme {
-        MainScreen()
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview() {
+//    JetNFTTheme {
+//        MainScreen(null)
+//    }
+//}
