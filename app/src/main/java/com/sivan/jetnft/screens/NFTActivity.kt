@@ -1,6 +1,8 @@
 package com.sivan.jetnft.screens
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,6 +16,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.runtime.Composable
@@ -34,6 +37,7 @@ import java.time.ZonedDateTime
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 
@@ -49,10 +53,81 @@ class NFTActivity : ComponentActivity() {
         setContent {
             JetNFTTheme {
                 // A surface container using the 'background' color from the theme
-                NFTActivityRootView(nftModel)
+                Scaffold(
+                    bottomBar = {
+                        PlaceABidButton()
+                    }
+                ) {
+                    NFTActivityRootView(nftModel)
+                }
+
             }
         }
     }
+}
+
+@Composable
+fun PlaceABidButton() {
+    val context = LocalContext.current
+
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(32.dp)) {
+        Card(elevation = 18.dp,
+            modifier = Modifier
+                .width(200.dp)
+                .height(60.dp)
+                .align(alignment = Alignment.Center),
+        shape = CircleShape) {
+            Box(modifier = Modifier.background(color = Color.Black)) {
+                    Text(text = "Place a bid",
+                        modifier = Modifier.align(alignment = Alignment.Center),
+                        color = Color.White)
+                }
+
+
+        }
+
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BackButton() {
+
+    val context = LocalContext.current
+
+    Card(modifier = Modifier
+        .size(42.dp)
+        .background(Color.Transparent)
+        .clickable { closeActivity(context) },
+        shape = CircleShape,
+        elevation = 18.dp) {
+        Icon(
+            imageVector =  Icons.Rounded.ArrowBack, contentDescription = "Back button",
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(10.dp)
+                .background(Color.White, CircleShape)
+                .clip(CircleShape)                       // clip to the circle shape
+            // add a border (optional)
+        )
+
+
+
+    }
+}
+
+fun closeActivity(context: Context) {
+    (context as Activity).finish()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PlaceAButtonPreview() {
+   PlaceABidButton()
 }
 
 @Composable
@@ -63,9 +138,16 @@ fun NFTActivityRootView(nftModel: NFTModel) {
             .fillMaxWidth()
             .height(450.dp)) {
 
+
+
             NFTImageCard(image = nftModel.nftImage, modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp))
+
+            Column(modifier = Modifier.padding(12.dp, 20.dp)) {
+                BackButton()
+            }
+
 
             CreatorCardVariant(
                 surfaceModifier = Modifier
@@ -85,27 +167,35 @@ fun NFTActivityRootView(nftModel: NFTModel) {
                 .align(alignment = Alignment.BottomEnd))
         }
 
-        Column(modifier = Modifier.fillMaxWidth()) {
+        Box() {
+            Column(modifier = Modifier.fillMaxWidth()) {
 
-            NFTNameText(modifier = Modifier.padding(horizontal = 24.dp),
-                name = nftModel.nftName)
+                NFTNameText(modifier = Modifier.padding(horizontal = 24.dp),
+                    name = nftModel.nftName)
 
-            Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
-            Text(text = "DESCRIPTION", style = MaterialTheme.typography.subtitle2,
+                Text(text = "DESCRIPTION", style = MaterialTheme.typography.subtitle2,
                     color = Color.Gray,
                     modifier = Modifier.padding(24.dp, 0.dp),
-                fontWeight = FontWeight.Light)
+                    fontWeight = FontWeight.Light)
 
-            Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
-            Text(text = nftModel.nftDescription,
-                style = MaterialTheme.typography.subtitle2,
-                modifier = Modifier.padding(24.dp, 0.dp),
-                fontWeight = FontWeight.Bold)
+                Text(text = nftModel.nftDescription,
+                    style = MaterialTheme.typography.subtitle2,
+                    modifier = Modifier.padding(24.dp, 0.dp),
+                    fontWeight = FontWeight.Bold)
 
 
+
+
+            }
         }
+
+
+
+
     }
 
 
