@@ -71,8 +71,12 @@ fun NFTList(list: List<NFTCacheEntity>?) {
                 .fillMaxWidth()
                 .height(400.dp)
                 .clip(shape = RoundedCornerShape(24.dp))
-                .clickable { context.startActivity(Intent(context, NFTActivity::class.java)
-                    .putExtra("nft_model", nftModel)) }
+                .clickable {
+                    context.startActivity(
+                        Intent(context, NFTActivity::class.java)
+                            .putExtra("nft_model", nftModel)
+                    )
+                }
                 ,
             elevation = 36.dp
         ) {
@@ -86,18 +90,17 @@ fun NFTList(list: List<NFTCacheEntity>?) {
                                     .padding(24.dp)
                     )
                     //Spacer(modifier = Modifier.height(18.dp))
-                    Text(
-                        text = item.nftName,
-                        style = MaterialTheme.typography.h5,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 24.dp))
+                    NFTNameText(modifier = Modifier.padding(horizontal = 24.dp), name = item.nftName)
 
                     Spacer(modifier = Modifier.height(18.dp))
 
                     Row(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()) {
-                        CreatorCard()
+
+                        CreatorCard(modifier = Modifier
+                            .wrapContentSize()
+                            .padding(24.dp))
                         PriceCard(item.current_bid)
                     }
 
@@ -131,6 +134,15 @@ fun NFTList(list: List<NFTCacheEntity>?) {
     }
 
 @Composable
+fun NFTNameText(modifier: Modifier, name : String) {
+    Text(
+        text = name,
+        style = MaterialTheme.typography.h5,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier)
+}
+
+@Composable
 fun ETHIcon() {
 
 
@@ -162,11 +174,9 @@ fun ETHIconPreview() {
 
 
 @Composable
-fun CreatorCard(){
+fun CreatorCard(modifier: Modifier){
     Surface() {
-        Row(modifier = Modifier
-            .wrapContentSize()
-            .padding(24.dp)) {
+        Row(modifier = modifier) {
             ProfileButton(image_id = R.drawable.user_image,
                 modifier = Modifier
                     .wrapContentSize()
@@ -227,7 +237,9 @@ fun PriceCard(price : Double){
 @Preview(showBackground = true)
 @Composable
 fun CreatorCardPreview(){
-    CreatorCard()
+    CreatorCard(modifier = Modifier
+        .wrapContentSize()
+        .padding(24.dp))
 }
 
 @Composable
