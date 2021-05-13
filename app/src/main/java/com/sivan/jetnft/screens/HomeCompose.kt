@@ -93,10 +93,7 @@ fun CustomAppBar() {
 
     ) {
         Row(modifier = Modifier.align(alignment = Alignment.TopEnd)) {
-            ProfileButton(R.drawable.user_image,
-                Modifier
-                    .wrapContentSize()
-                    .clip(CircleShape))
+            ProfileButton(R.drawable.user_image)
         }
 
     }
@@ -104,7 +101,7 @@ fun CustomAppBar() {
 }
 
 @Composable
-fun ProfileButton(image_id : Int, modifier: Modifier) {
+fun ProfileButton(image_id : Int) {
 
 
     Card(modifier = Modifier.wrapContentSize(),

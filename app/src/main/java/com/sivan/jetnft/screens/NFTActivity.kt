@@ -7,8 +7,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,17 +33,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.sivan.jetnft.R
 import com.sivan.jetnft.database.model.NFTModel
-import com.sivan.jetnft.screens.ui.theme.JetNFTTheme
 import java.time.ZonedDateTime
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.unit.sp
+import com.sivan.jetnft.ui.theme.JetNFTTheme
 
 class NFTActivity : ComponentActivity() {
 
@@ -54,13 +59,17 @@ class NFTActivity : ComponentActivity() {
             JetNFTTheme {
                 // A surface container using the 'background' color from the theme
                 Scaffold(
+                    content = {
+                        Box(modifier = Modifier.padding(it)) {
+                            NFTActivityRootView(nftModel)
+                        }
+
+                    },
+
                     bottomBar = {
                         PlaceABidButton()
                     }
-                ) {
-                    NFTActivityRootView(nftModel)
-                }
-
+                )
             }
         }
     }
@@ -110,7 +119,6 @@ fun BackButton() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(10.dp)
-                .background(Color.White, CircleShape)
                 .clip(CircleShape)                       // clip to the circle shape
             // add a border (optional)
         )
@@ -132,7 +140,7 @@ fun PlaceAButtonPreview() {
 
 @Composable
 fun NFTActivityRootView(nftModel: NFTModel) {
-    Surface(color = MaterialTheme.colors.background) {
+    Surface(color = MaterialTheme.colors.background, modifier = Modifier.wrapContentHeight()) {
     Column() {
         Box(modifier = Modifier
             .fillMaxWidth()
@@ -173,21 +181,24 @@ fun NFTActivityRootView(nftModel: NFTModel) {
                 NFTNameText(modifier = Modifier.padding(horizontal = 24.dp),
                     name = nftModel.nftName)
 
-                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(text = "DESCRIPTION", style = MaterialTheme.typography.subtitle2,
                     color = Color.Gray,
-                    modifier = Modifier.padding(24.dp, 0.dp),
+                    modifier = Modifier.padding(24.dp, 12.dp),
                     fontWeight = FontWeight.Light)
-
-                Spacer(modifier = Modifier.height(18.dp))
 
                 Text(text = nftModel.nftDescription,
                     style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier.padding(24.dp, 0.dp),
                     fontWeight = FontWeight.Bold)
 
+                Text(text = "CURRENT BID", style = MaterialTheme.typography.subtitle2,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(24.dp, 10.dp),
+                    fontWeight = FontWeight.Light)
 
+
+                BidItem()
 
 
             }
@@ -200,6 +211,58 @@ fun NFTActivityRootView(nftModel: NFTModel) {
 
 
     }
+}
+
+@Composable
+fun BidItem(){
+    val BidBGDark = Color(0xFA242222)
+    val BidBGWhite = Color(0xFAF1ECEC)
+
+    Surface(modifier = Modifier
+
+        .padding(12.dp, 0.dp)
+        .clip(shape = RoundedCornerShape(18.dp))
+
+
+    ) {
+        Row(modifier = Modifier
+            .background(if(MaterialTheme.colors.isLight) BidBGWhite else BidBGDark)
+            .fillMaxWidth()
+            .padding(8.dp, 18.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly) {
+            ProfileButton(image_id = R.drawable.user_image)
+
+
+
+            Column(verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.height(36.dp)) {
+
+                Text(text = "Bid placed by Sivan",
+                    style = MaterialTheme.typography.subtitle2,
+                    fontWeight = FontWeight.SemiBold)
+
+                Text(text = "April 25, 2021 at 10:30 AM",
+                    style = MaterialTheme.typography.subtitle2,
+                    fontWeight = FontWeight.Light)
+
+
+            }
+
+            Text(text = "1.250 ETH",
+                style = MaterialTheme.typography.subtitle2,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(alignment = Alignment.CenterVertically))
+
+        }
+    }
+
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BidItemPreview(){
+    BidItem()
 }
 
 
@@ -242,7 +305,6 @@ fun RoundedIcon(imageVector: ImageVector) {
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
-            .background(Color.White, CircleShape)
             .clip(CircleShape)                       // clip to the circle shape
         // add a border (optional)
     )
@@ -254,10 +316,7 @@ fun CreatorCardVariant(surfaceModifier: Modifier, modifier: Modifier){
     Surface(modifier = surfaceModifier
     ) {
         Row(modifier = modifier) {
-            ProfileButton(image_id = R.drawable.user_image,
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(CircleShape))
+            ProfileButton(image_id = R.drawable.user_image)
 
             Spacer(modifier = Modifier.width(8.dp))
 

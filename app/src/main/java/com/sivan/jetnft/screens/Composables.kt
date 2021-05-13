@@ -177,10 +177,7 @@ fun ETHIconPreview() {
 fun CreatorCard(modifier: Modifier){
     Surface() {
         Row(modifier = modifier) {
-            ProfileButton(image_id = R.drawable.user_image,
-                modifier = Modifier
-                    .wrapContentSize()
-                    .clip(CircleShape))
+            ProfileButton(image_id = R.drawable.user_image)
 
             Spacer(modifier = Modifier.width(12.dp))
 
