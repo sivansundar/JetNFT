@@ -3,16 +3,12 @@ package com.sivan.jetnft.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.ScrollableState
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,35 +35,36 @@ import java.time.ZonedDateTime
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.unit.sp
+import com.sivan.jetnft.database.model.NFTWithUserModel
+import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 
 class NFTActivity : ComponentActivity() {
 
-    lateinit var nftModel: NFTModel
+    lateinit var nftModel: NFTWithUserModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        nftModel = intent.getParcelableExtra<NFTModel>("nft_model")!!
+        nftModel = intent.getParcelableExtra<NFTWithUserModel>("nft_model")!!
 
         setContent {
             JetNFTTheme {
+
                 // A surface container using the 'background' color from the theme
                 Scaffold(
                     content = {
-                        Box(modifier = Modifier.padding(it)) {
+                        Box(modifier = Modifier
+                            .padding(it)
+                            .verticalScroll(rememberScrollState(), true)) {
                             NFTActivityRootView(nftModel)
                         }
 
                     },
 
                     bottomBar = {
-                        PlaceABidButton()
+                        PlaceABidButton(nftModel)
                     }
                 )
             }
@@ -76,7 +73,7 @@ class NFTActivity : ComponentActivity() {
 }
 
 @Composable
-fun PlaceABidButton() {
+fun PlaceABidButton(item: NFTWithUserModel?) {
     val context = LocalContext.current
 
 
@@ -87,9 +84,14 @@ fun PlaceABidButton() {
             modifier = Modifier
                 .width(200.dp)
                 .height(60.dp)
-                .align(alignment = Alignment.Center),
+                .align(alignment = Alignment.Center)
+                ,
         shape = CircleShape) {
-            Box(modifier = Modifier.background(color = Color.Black)) {
+            Box(modifier = Modifier.background(color = Color.Black)
+                .clickable {
+                    context.startActivity(Intent(context, PlaceABidActivity::class.java)
+                        .putExtra("nft_item", item))
+                }) {
                     Text(text = "Place a bid",
                         modifier = Modifier.align(alignment = Alignment.Center),
                         color = Color.White)
@@ -135,11 +137,11 @@ fun closeActivity(context: Context) {
 @Preview(showBackground = true)
 @Composable
 fun PlaceAButtonPreview() {
-   PlaceABidButton()
+   PlaceABidButton(null)
 }
 
 @Composable
-fun NFTActivityRootView(nftModel: NFTModel) {
+fun NFTActivityRootView(nftModel: NFTWithUserModel) {
     Surface(color = MaterialTheme.colors.background, modifier = Modifier.wrapContentHeight()) {
     Column() {
         Box(modifier = Modifier
@@ -148,7 +150,7 @@ fun NFTActivityRootView(nftModel: NFTModel) {
 
 
 
-            NFTImageCard(image = nftModel.nftImage, modifier = Modifier
+            NFTImageCard(image = nftModel.nft.nftImage, modifier = Modifier
                 .fillMaxWidth()
                 .height(400.dp))
 
@@ -165,7 +167,8 @@ fun NFTActivityRootView(nftModel: NFTModel) {
                 ,
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(8.dp)
+                    .padding(8.dp),
+                user = nftModel.user
             )
 
             HeartButton(surfaceModifier = Modifier
@@ -179,7 +182,7 @@ fun NFTActivityRootView(nftModel: NFTModel) {
             Column(modifier = Modifier.fillMaxWidth()) {
 
                 NFTNameText(modifier = Modifier.padding(horizontal = 24.dp),
-                    name = nftModel.nftName)
+                    name = nftModel.nft.nftName)
 
 
                 Text(text = "DESCRIPTION", style = MaterialTheme.typography.subtitle2,
@@ -187,7 +190,7 @@ fun NFTActivityRootView(nftModel: NFTModel) {
                     modifier = Modifier.padding(24.dp, 12.dp),
                     fontWeight = FontWeight.Light)
 
-                Text(text = nftModel.nftDescription,
+                Text(text = nftModel.nft.nftDescription,
                     style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier.padding(24.dp, 0.dp),
                     fontWeight = FontWeight.Bold)
@@ -198,6 +201,7 @@ fun NFTActivityRootView(nftModel: NFTModel) {
                     fontWeight = FontWeight.Light)
 
 
+                // Get latest bid from database and pass it on to the composable.
                 BidItem()
 
 
@@ -226,7 +230,7 @@ fun BidItem(){
 
     ) {
         Row(modifier = Modifier
-            .background(if(MaterialTheme.colors.isLight) BidBGWhite else BidBGDark)
+            .background(if (MaterialTheme.colors.isLight) BidBGWhite else BidBGDark)
             .fillMaxWidth()
             .padding(8.dp, 18.dp),
         horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -311,7 +315,7 @@ fun RoundedIcon(imageVector: ImageVector) {
 }
 
 @Composable
-fun CreatorCardVariant(surfaceModifier: Modifier, modifier: Modifier){
+fun CreatorCardVariant(surfaceModifier: Modifier, modifier: Modifier, user: UserModel){
     
     Surface(modifier = surfaceModifier
     ) {
@@ -323,7 +327,7 @@ fun CreatorCardVariant(surfaceModifier: Modifier, modifier: Modifier){
             Column(verticalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier.height(36.dp)) {
 
-                Text(text = "Hellyolaaa",
+                Text(text = user.name,
                     style = MaterialTheme.typography.subtitle2,
                     fontWeight = FontWeight.Bold)
 
@@ -348,7 +352,22 @@ fun NFTActivityRootViewPreview(){
         created_at = ZonedDateTime.now(),
         updated_at = ZonedDateTime.now()
     )
-    NFTActivityRootView(nftModel)
+
+    val userModel = UserModel(
+        id = 1,
+        name = "Elon Musk",
+        balance = 750,
+        bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
+        created_at = ZonedDateTime.now(),
+        updated_at = ZonedDateTime.now(),
+        publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
+    )
+
+    val nftWithUserModel = NFTWithUserModel(
+        nft = nftModel,
+        user = userModel
+    )
+    NFTActivityRootView(nftWithUserModel)
 }
 
 @Composable

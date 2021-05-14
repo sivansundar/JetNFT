@@ -3,6 +3,7 @@ package com.sivan.jetnft
 import android.util.Log
 import androidx.lifecycle.*
 import com.sivan.jetnft.database.entity.NFTCacheEntity
+import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +23,7 @@ class MainViewModel @Inject constructor(
     val nfts: LiveData<List<NFTCacheEntity>> get() = _nfts
 
 
-    var getAllNFT: LiveData<List<NFTCacheEntity>>? = null
+    var getAllNFT: LiveData<List<NFTWithUserCacheEntity>>? = null
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -35,7 +36,7 @@ class MainViewModel @Inject constructor(
 
     }
 //
-    suspend fun getNftLists(): LiveData<List<NFTCacheEntity>> {
+    suspend fun getNftLists(): LiveData<List<NFTWithUserCacheEntity>> {
     val list = mainRepository.getNFTs()
     Log.d("Repo", "List : ${list.value}")
     return list

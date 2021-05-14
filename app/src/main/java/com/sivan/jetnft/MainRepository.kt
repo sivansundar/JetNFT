@@ -23,11 +23,7 @@ import android.graphics.Bitmap
 import androidx.core.content.res.ResourcesCompat
 
 import android.graphics.drawable.BitmapDrawable
-
-
-
-
-
+import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 
 
 class MainRepository(
@@ -40,7 +36,7 @@ class MainRepository(
 
 
 
-   suspend fun getNFTs(): LiveData<List<NFTCacheEntity>> {
+   suspend fun getNFTs(): LiveData<List<NFTWithUserCacheEntity>> {
 
         return nftDao.getAllNFT()
     }
@@ -51,8 +47,8 @@ class MainRepository(
 
         val userList = listOf<UserCacheEntity>(
             UserCacheEntity(
-                id = 1,
-            name = "Helloyyaaa",
+            id = 1,
+            name = "Meta Kovan",
             balance = 750,
             bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
             created_at = ZonedDateTime.now(),
@@ -80,8 +76,14 @@ class MainRepository(
                 id = 1,
                 nftName = "Nyan Cat",
                 creatorId = 1,
-                current_bid = 1.250,
-                nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
+                current_bid = 6.0,
+                nftDescription = "Nyan Cat has harnessed the essence of space and time. It blasts off with ultimate power.\n" +
+                        "\n" +
+                        "This extra special gift was originally released to the holders of Lucky Nyan Cat as a thank you for believing in the power of memes.\n" +
+                        "\n" +
+                        "Owning this NFT grants the following stats:\n" +
+                        "\n" +
+                        "Quantum+5 Power+20 Infinity+∞",
                 nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
                 created_at = ZonedDateTime.now(),
                 updated_at = ZonedDateTime.now()
@@ -91,7 +93,7 @@ class MainRepository(
                 id = 2,
                 nftName = "Moon Doge",
                 creatorId = 2,
-                current_bid = 1.250,
+                current_bid = 4.0,
                 nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
                 nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_4.jpg",
                 created_at = ZonedDateTime.now(),

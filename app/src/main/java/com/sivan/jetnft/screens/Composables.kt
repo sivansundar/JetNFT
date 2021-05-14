@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,16 +21,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.coil.CoilImage
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.imageloading.ImageLoadState
 import com.sivan.jetnft.R
-import com.sivan.jetnft.database.entity.NFTCacheEntity
+import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
+import com.sivan.jetnft.database.entity.toNFTModel
+import com.sivan.jetnft.database.entity.toUserModel
 import com.sivan.jetnft.database.model.NFTModel
+import com.sivan.jetnft.database.model.NFTWithUserModel
 
 
 @Composable
-fun NFTList(list: List<NFTCacheEntity>?) {
+fun NFTList(list: List<NFTWithUserCacheEntity>?) {
     if (list != null) {
 
         LazyColumn {
@@ -48,22 +49,18 @@ fun NFTList(list: List<NFTCacheEntity>?) {
 }
 
 @Composable
-    fun NFTCard(item: NFTCacheEntity) {
+    fun NFTCard(item: NFTWithUserCacheEntity) {
         val lightGrey = Color(0xFFFAFAFA)
         val lightBlack = Color(0xFF252525)
         val context = LocalContext.current
 
         //Toast.makeText(context, "List : ${item.nftName}", Toast.LENGTH_SHORT).show()
+
         val nftItemCopy = item.copy()
-        val nftModel = NFTModel(
-            id = nftItemCopy.id,
-            nftName = nftItemCopy.nftName,
-            nftDescription = nftItemCopy.nftDescription,
-            nftImage = nftItemCopy.nftImage,
-            current_bid = nftItemCopy.current_bid,
-            creatorId = nftItemCopy.creatorId,
-            updated_at = nftItemCopy.updated_at,
-            created_at = nftItemCopy.created_at
+
+        val nftWithUser = NFTWithUserModel(
+            nft = nftItemCopy.nft.toNFTModel(),
+            user = nftItemCopy.user.toUserModel()
         )
 
         Card(
@@ -74,7 +71,7 @@ fun NFTList(list: List<NFTCacheEntity>?) {
                 .clickable {
                     context.startActivity(
                         Intent(context, NFTActivity::class.java)
-                            .putExtra("nft_model", nftModel)
+                            .putExtra("nft_model", nftWithUser)
                     )
                 }
                 ,
@@ -83,14 +80,14 @@ fun NFTList(list: List<NFTCacheEntity>?) {
 
             Surface() {
                 Column {
-                    NFTImageCard(image = item.nftImage,
+                    NFTImageCard(image = item.nft.nftImage,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(200.dp)
                                     .padding(24.dp)
                     )
                     //Spacer(modifier = Modifier.height(18.dp))
-                    NFTNameText(modifier = Modifier.padding(horizontal = 24.dp), name = item.nftName)
+                    NFTNameText(modifier = Modifier.padding(horizontal = 24.dp), name = item.nft.nftName)
 
                     Spacer(modifier = Modifier.height(18.dp))
 
@@ -100,8 +97,8 @@ fun NFTList(list: List<NFTCacheEntity>?) {
 
                         CreatorCard(modifier = Modifier
                             .wrapContentSize()
-                            .padding(24.dp))
-                        PriceCard(item.current_bid)
+                            .padding(24.dp), nftItemCopy.user.name)
+                        PriceCard(item.nft.current_bid)
                     }
 
                     val context = LocalContext.current
@@ -174,7 +171,7 @@ fun ETHIconPreview() {
 
 
 @Composable
-fun CreatorCard(modifier: Modifier){
+fun CreatorCard(modifier: Modifier, name: String){
     Surface() {
         Row(modifier = modifier) {
             ProfileButton(image_id = R.drawable.user_image)
@@ -187,7 +184,7 @@ fun CreatorCard(modifier: Modifier){
                     fontSize = 8.sp,
                     fontWeight = FontWeight.Light)
 
-                Text(text = "Hellyolaaa",
+                Text(text = name,
                     style = MaterialTheme.typography.subtitle2,
                     fontWeight = FontWeight.Bold)
 
@@ -234,9 +231,11 @@ fun PriceCard(price : Double){
 @Preview(showBackground = true)
 @Composable
 fun CreatorCardPreview(){
-    CreatorCard(modifier = Modifier
-        .wrapContentSize()
-        .padding(24.dp))
+    CreatorCard(
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(24.dp), name = "Sivan"
+    )
 }
 
 @Composable

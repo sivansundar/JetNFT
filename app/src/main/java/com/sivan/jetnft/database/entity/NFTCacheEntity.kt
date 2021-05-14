@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.ForeignKey.CASCADE
 import androidx.room.PrimaryKey
+import com.sivan.jetnft.database.model.NFTModel
 import java.time.ZonedDateTime
 
 @Entity(tableName = "nft",
@@ -28,7 +29,7 @@ data class NFTCacheEntity(
     @ColumnInfo(name = "nft_image")
     var nftImage: String,
 
-    @ColumnInfo(name = "creator_id")
+    @ColumnInfo(name = "creator_id", index = true)
     var creatorId: Long,
 
     @ColumnInfo(name = "current_bid")
@@ -42,3 +43,15 @@ data class NFTCacheEntity(
 
 ) {
 }
+
+fun NFTCacheEntity.toNFTModel() = NFTModel(
+    id = this.id,
+    nftName = this.nftName,
+    nftDescription = this.nftDescription,
+    nftImage = this.nftImage,
+    creatorId = this.creatorId,
+    current_bid = this.current_bid,
+    created_at = this.created_at,
+    updated_at = this.updated_at
+)
+

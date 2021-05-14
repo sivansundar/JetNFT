@@ -3,6 +3,8 @@ package com.sivan.jetnft.database.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.sivan.jetnft.database.model.NFTModel
+import com.sivan.jetnft.database.model.UserModel
 import java.time.ZonedDateTime
 
 @Entity(tableName = "users")
@@ -31,3 +33,14 @@ data class UserCacheEntity(
 
 ) {
 }
+
+fun UserCacheEntity.toUserModel() = UserModel(
+    id = this.id,
+    name = this.name,
+    bio = this.bio,
+    balance = this.balance,
+    publicKey = this.publicKey,
+    created_at = this.created_at,
+    updated_at = this.updated_at
+)
+

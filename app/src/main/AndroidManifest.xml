@@ -13,6 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.JetNFT">
         <activity
+            android:name=".screens.PlaceABidActivity"
+            android:exported="true"
+            android:label="@string/title_activity_place_abid"
+            android:theme="@style/Theme.JetNFT.NoActionBar" />
+        <activity
             android:name=".screens.NFTActivity"
             android:exported="true"
             android:label="@string/title_activity_nftactivity"

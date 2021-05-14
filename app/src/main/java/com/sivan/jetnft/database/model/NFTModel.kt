@@ -3,6 +3,7 @@ package com.sivan.jetnft.database.model
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
+import com.sivan.jetnft.database.entity.NFTCacheEntity
 import kotlinx.android.parcel.Parcelize
 import java.time.ZonedDateTime
 
@@ -25,3 +26,4 @@ data class NFTModel(
     var updated_at: ZonedDateTime
 ) : Parcelable {
 }
+
