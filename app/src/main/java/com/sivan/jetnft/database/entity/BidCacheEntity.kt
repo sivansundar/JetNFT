@@ -20,11 +20,11 @@ data class BidCacheEntity(
     @ColumnInfo(name = "user_id")
     val user_id: Long,
 
+    @ColumnInfo(name = "nft_id")
+    var nft_id : Long,
+
     @ColumnInfo(name = "bid_amount")
     var bidAmount: Long,
-
-    @ColumnInfo(name = "current_bid")
-    var current_bid : Long,
 
     @ColumnInfo(name = "created_at")
     var created_at : ZonedDateTime,

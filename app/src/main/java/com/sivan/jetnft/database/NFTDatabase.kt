@@ -16,7 +16,7 @@ import com.sivan.jetnft.util.DateTimeConverter
 @Database(entities =
     [NFTCacheEntity::class,
     BidCacheEntity::class,
-    UserCacheEntity::class], version = 1, exportSchema = false)
+    UserCacheEntity::class], version = 2, exportSchema = false)
 
 @TypeConverters(DateTimeConverter::class, BitmapConverter::class)
 abstract class NFTDatabase : RoomDatabase() {

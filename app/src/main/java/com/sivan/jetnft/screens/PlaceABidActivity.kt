@@ -1,14 +1,17 @@
 package com.sivan.jetnft.screens
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -22,15 +25,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.coil.rememberCoilPainter
+import com.sivan.jetnft.MainViewModel
 import com.sivan.jetnft.database.model.NFTModel
 import com.sivan.jetnft.database.model.NFTWithUserModel
 import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
+import dagger.hilt.android.AndroidEntryPoint
 import java.time.ZonedDateTime
 
+@AndroidEntryPoint
 class PlaceABidActivity : ComponentActivity() {
 
     lateinit var nftModel: NFTWithUserModel
+
+    val mainViewModel: MainViewModel by viewModels()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,13 +55,13 @@ class PlaceABidActivity : ComponentActivity() {
                         Box(modifier = Modifier
                             .padding(it)
                             .verticalScroll(rememberScrollState(), true)) {
-                            PlaceABidRootView(nftModel)
+                            PlaceABidRootView(nftModel, mainViewModel = mainViewModel)
                         }
 
                     },
 
                     bottomBar = {
-                        ConfirmButton()
+                        ConfirmButton(mainViewModel, nftModel)
                     }
                 )
             }
@@ -62,12 +70,32 @@ class PlaceABidActivity : ComponentActivity() {
 }
 
 @Composable
-fun ConfirmButton() {
+fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
     val context = LocalContext.current
+
+    var ethBid = mainViewModel.bidETH.observeAsState()
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+
+        ConfirmDialog(
+            nftModel = nftModel,
+            ethValue = if(ethBid.value == null) nftModel.nft.current_bid else ethBid.value,
+            showDialog = showDialog.value
+        ) {
+            showDialog.value = false
+        }
+
+    }
+
+
+
 
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(32.dp)) {
+
         Card(elevation = 18.dp,
             modifier = Modifier
                 .width(200.dp)
@@ -78,7 +106,9 @@ fun ConfirmButton() {
         ) {
             Box(modifier = Modifier
                 .background(color = Color.Black)
-                .clickable { }
+                .clickable {
+                    showDialog.value = true
+                }
             ) {
                 Text(text = "Confirm",
                     modifier = Modifier.align(alignment = Alignment.Center),
@@ -91,7 +121,48 @@ fun ConfirmButton() {
     }}
 
 @Composable
-fun PlaceABidRootView(nftModel: NFTWithUserModel) {
+fun ConfirmDialog(
+    nftModel: NFTWithUserModel,
+    ethValue: Double?,
+    showDialog: Boolean,
+    onDismiss: () -> Unit) {
+
+
+    if (showDialog) {
+
+        AlertDialog(
+            onDismissRequest =  onDismiss,
+            title = {
+                Text(text = "Place a bid?")
+            },
+            text = {
+                Text("Are you sure you want to place a bid for ${nftModel.nft.nftName} at ${ethValue} ETH ? ")
+            },
+            confirmButton = {
+                Button(
+                    modifier = Modifier.width(100.dp),
+                    onClick = onDismiss )
+                {
+                    Text("Yes")
+                    // Send req to viewmodel to update database data
+
+                }
+            },
+            dismissButton = {
+                Button(
+                    modifier = Modifier.width(100.dp),
+                    onClick = onDismiss )
+                {
+                    Text("No")
+                }
+            }
+        )
+
+    }
+}
+
+@Composable
+fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel?) {
     Surface(modifier = Modifier.fillMaxSize()) {
        Column {
 
@@ -106,7 +177,7 @@ fun PlaceABidRootView(nftModel: NFTWithUserModel) {
 
            DetailsHolder(nftModel)
 
-           ETHCounter(nftModel.nft.current_bid)
+           ETHCounter(nftModel.nft.current_bid, mainViewModel)
 
            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                Text(text = "You must bid at least ${nftModel.nft.current_bid.inc()} ETH \uD83D\uDD25", fontSize = 12.sp)
@@ -170,13 +241,16 @@ fun DetailsHolder(nftModel: NFTWithUserModel) {
 @Preview(showBackground = true)
 @Composable
 fun ETHCounterView() {
-    ETHCounter(1.0)
+    ETHCounter(1.0, null)
 }
 
 @Composable
-fun ETHCounter(currentBid: Double) {
+fun ETHCounter(currentBid: Double, mainViewModel: MainViewModel?) {
     val value = 1.2
-    val counterColorWhite = Color(0xFADAE2E9)
+    val context = LocalContext.current
+
+    val counterColorLight = Color(0xFADAE2E9)
+    val counterColorDark = Color(0xFA272829)
 
     val counterCardBorder = Color(0xFACFDCE7)
 
@@ -192,13 +266,24 @@ fun ETHCounter(currentBid: Double) {
 
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                 var ethValue by remember { mutableStateOf(currentBid) }
+                var ethBid = mainViewModel?.bidETH?.observeAsState()
+
 
                 Box(modifier = Modifier
                     .size(48.dp)
                     .clip(shape = RoundedCornerShape(12.dp))
-                    .background(color = counterColorWhite)
+                    .background(color = if (MaterialTheme.colors.isLight) counterColorLight else counterColorDark)
                     .align(alignment = Alignment.CenterVertically)
-                    .clickable { if (ethValue > currentBid) ethValue-- }
+                    .clickable {
+                        if (ethValue > currentBid)
+                            ethValue--
+                        updateETHValue(ethValue, mainViewModel)
+                        Toast
+                            .makeText(context, "Bid value : ${ethBid?.value}", Toast.LENGTH_LONG)
+                            .show()
+
+
+                    }
                 ) {
                     Text(modifier = Modifier
                         .wrapContentSize()
@@ -220,9 +305,12 @@ fun ETHCounter(currentBid: Double) {
                 Box(modifier = Modifier
                     .size(48.dp)
                     .clip(shape = RoundedCornerShape(12.dp))
-                    .background(color = counterColorWhite)
+                    .background(color = if (MaterialTheme.colors.isLight) counterColorLight else counterColorDark)
                     .align(alignment = Alignment.CenterVertically)
-                    .clickable { ethValue++ }
+                    .clickable {
+                        ethValue++
+                        updateETHValue(ethValue, mainViewModel)
+                    }
                 ) {
                     Text(modifier = Modifier
                         .wrapContentSize()
@@ -235,6 +323,9 @@ fun ETHCounter(currentBid: Double) {
     }
 }
 
+fun updateETHValue(ethValue: Double, mainViewModel: MainViewModel?) {
+    mainViewModel?.setBidETHValue(ethValue)
+}
 
 
 @Preview(showBackground = true)
@@ -265,7 +356,7 @@ fun PlaceABidRootViewPreview() {
         nft = nftModel,
         user = userModel
     )
-    PlaceABidRootView(nftWithUserModel)
+    PlaceABidRootView(nftWithUserModel, null)
 }
 
 @Preview(showBackground = true)
@@ -297,6 +388,6 @@ fun DefaultPreview2() {
         user = userModel
     )
     JetNFTTheme {
-        PlaceABidRootView(nftWithUserModel)
+        PlaceABidRootView(nftWithUserModel, null)
     }
 }

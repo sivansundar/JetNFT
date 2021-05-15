@@ -25,6 +25,13 @@ class MainViewModel @Inject constructor(
 
     var getAllNFT: LiveData<List<NFTWithUserCacheEntity>>? = null
 
+    var bidETHValue: MutableLiveData<Double> = MutableLiveData()
+    var bidETH : LiveData<Double> = bidETHValue
+
+    fun setBidETHValue(value : Double) {
+        bidETHValue.value = value
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             mainRepository.postUser()
