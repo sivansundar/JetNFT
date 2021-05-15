@@ -1,35 +1,27 @@
 package com.sivan.jetnft
 
-import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.liveData
 import com.sivan.jetnft.database.NFTDatabase
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
 import com.sivan.jetnft.database.entity.NFTCacheEntity
 import com.sivan.jetnft.database.entity.UserCacheEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import java.time.ZonedDateTime
-import android.R
 import android.content.Context
+import android.util.Log
+import com.sivan.jetnft.database.dao.BidDao
+import com.sivan.jetnft.database.entity.BidCacheEntity
 
-import android.graphics.BitmapFactory
-
-import android.graphics.Bitmap
-import androidx.core.content.res.ResourcesCompat
-
-import android.graphics.drawable.BitmapDrawable
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
+import com.sivan.jetnft.database.model.NFTWithUserModel
+import kotlin.Exception
 
 
 class MainRepository(
     private val nftDatabase: NFTDatabase,
     private val nftDao: NFTDao,
     private val userDao: UserDao,
+    private val bidDao: BidDao,
     private val context : Context
 
 ) {
@@ -64,7 +56,17 @@ class MainRepository(
                 created_at = ZonedDateTime.now(),
                 updated_at = ZonedDateTime.now(),
                 publicKey = "0xca0215as0a2s0sx5ax0560as5s056416"
-            ))
+            ),
+
+        UserCacheEntity(
+            id = 3,
+            name = "Sivan",
+            balance = 854,
+            bio = "Decentralize the universe",
+            created_at = ZonedDateTime.now(),
+            updated_at = ZonedDateTime.now(),
+            publicKey = "0x51a56sd4a0sa560a850asd1azx0asd56as4"
+        ))
 
         userDao.insertList(userList)
     }
@@ -103,5 +105,33 @@ class MainRepository(
 
         )
         nftDao.insertList(nftList)
+    }
+
+   suspend fun postBid(nftModel: NFTWithUserModel, ethValue: Double?) {
+
+       try {
+           val user = userDao.getUser(3)
+
+           val bidItem = BidCacheEntity(
+               user_id = user.id,
+               bidAmount = ethValue!!,
+               nft_id = nftModel.nft.id,
+               created_at = ZonedDateTime.now(),
+               updated_at = ZonedDateTime.now()
+
+           )
+
+           val insertBid = bidDao.insert(bidItem)
+           Log.d("Repo" , "Insert bid success! Status ${insertBid}")
+
+           val updateNFTBidValue = nftDao.updateNFTCurrentValue(nftModel.nft.id, ethValue!!.toDouble())
+           Log.d("Repo" , "NFT update success! Status ${updateNFTBidValue}")
+
+
+       } catch (e : Exception) {
+           Log.d("Repo" , "Failed bid insert : ${e.localizedMessage} : ${e.cause} : ${e.message}")
+       }
+
+
     }
 }

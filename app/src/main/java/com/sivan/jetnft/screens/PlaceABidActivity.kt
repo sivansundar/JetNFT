@@ -1,6 +1,7 @@
 package com.sivan.jetnft.screens
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,6 +32,8 @@ import com.sivan.jetnft.database.model.NFTWithUserModel
 import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.time.ZonedDateTime
 
 @AndroidEntryPoint
@@ -77,19 +80,21 @@ fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
 
     val showDialog = remember { mutableStateOf(false) }
 
-    if (showDialog.value) {
+    if (showDialog.value ) {
 
-        ConfirmDialog(
-            nftModel = nftModel,
-            ethValue = if(ethBid.value == null) nftModel.nft.current_bid else ethBid.value,
-            showDialog = showDialog.value
-        ) {
-            showDialog.value = false
+        if(ethBid.value == null) nftModel.nft.current_bid else ethBid.value?.let {
+            ConfirmDialog(
+                mainViewModel,
+                nftModel = nftModel,
+                ethValue = it,
+                showDialog = showDialog
+            ) {
+                showDialog.value = false
+            }
         }
 
+
     }
-
-
 
 
     Box(modifier = Modifier
@@ -107,7 +112,12 @@ fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
             Box(modifier = Modifier
                 .background(color = Color.Black)
                 .clickable {
-                    showDialog.value = true
+                    if (ethBid.value !=null && ethBid.value!! > nftModel.nft.current_bid) {
+                        showDialog.value = true
+                    } else {
+                        showDialog.value = false
+                    }
+
                 }
             ) {
                 Text(text = "Confirm",
@@ -122,13 +132,16 @@ fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
 
 @Composable
 fun ConfirmDialog(
+    mainViewModel: MainViewModel,
     nftModel: NFTWithUserModel,
-    ethValue: Double?,
-    showDialog: Boolean,
+    ethValue: Double,
+    showDialog: MutableState<Boolean>,
     onDismiss: () -> Unit) {
 
 
-    if (showDialog) {
+    if (showDialog.value) {
+
+        val coroutineContext = rememberCoroutineScope()
 
         AlertDialog(
             onDismissRequest =  onDismiss,
@@ -141,17 +154,30 @@ fun ConfirmDialog(
             confirmButton = {
                 Button(
                     modifier = Modifier.width(100.dp),
-                    onClick = onDismiss )
+                    onClick = {
+                        coroutineContext.launch(Dispatchers.IO) {
+                            Log.d("Main", "ETH value : ${ethValue}")
+
+                                placeBid(mainViewModel, nftModel, ethValue)
+
+                        }
+
+                        showDialog.value = false
+
+
+                    }
+                )
                 {
                     Text("Yes")
                     // Send req to viewmodel to update database data
+
 
                 }
             },
             dismissButton = {
                 Button(
                     modifier = Modifier.width(100.dp),
-                    onClick = onDismiss )
+                    onClick = { showDialog.value = false } )
                 {
                     Text("No")
                 }
@@ -159,6 +185,10 @@ fun ConfirmDialog(
         )
 
     }
+}
+
+suspend fun placeBid(mainViewModel: MainViewModel, nftModel: NFTWithUserModel, ethValue: Double) {
+    mainViewModel.placeBid(nftModel, ethValue)
 }
 
 @Composable

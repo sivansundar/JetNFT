@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.sivan.jetnft.database.entity.NFTCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
+import com.sivan.jetnft.database.model.NFTWithUserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +31,12 @@ class MainViewModel @Inject constructor(
 
     fun setBidETHValue(value : Double) {
         bidETHValue.value = value
+    }
+
+
+   suspend fun placeBid(nftModel: NFTWithUserModel, ethValue: Double?) {
+
+        mainRepository.postBid(nftModel, ethValue)
     }
 
     init {

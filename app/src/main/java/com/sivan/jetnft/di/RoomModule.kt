@@ -3,6 +3,7 @@ package com.sivan.jetnft.di
 import android.content.Context
 import androidx.room.Room
 import com.sivan.jetnft.database.NFTDatabase
+import com.sivan.jetnft.database.dao.BidDao
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
 import dagger.Module
@@ -38,6 +39,12 @@ object RoomModule {
     @Provides
     fun provideUserDao(nftDatabase: NFTDatabase) : UserDao {
         return nftDatabase.userDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideBidDao(nftDatabase: NFTDatabase) : BidDao {
+        return nftDatabase.bidDao()
     }
 
 

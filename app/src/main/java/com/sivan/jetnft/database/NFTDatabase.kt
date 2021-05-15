@@ -5,6 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import com.sivan.jetnft.database.dao.BidDao
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
 import com.sivan.jetnft.database.entity.BidCacheEntity
@@ -22,6 +23,7 @@ import com.sivan.jetnft.util.DateTimeConverter
 abstract class NFTDatabase : RoomDatabase() {
     abstract fun nftDao() : NFTDao
     abstract fun userDao() : UserDao
+    abstract fun bidDao() : BidDao
 
     companion object {
         val DATABASE_NAME : String = "nft_db"
