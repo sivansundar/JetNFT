@@ -1,5 +1,6 @@
 package com.sivan.jetnft.screens
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -27,14 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.sivan.jetnft.MainViewModel
-import com.sivan.jetnft.database.model.NFTModel
+import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
-import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.ZonedDateTime
 
 @AndroidEntryPoint
 class PlaceABidActivity : ComponentActivity() {
@@ -194,7 +193,7 @@ suspend fun placeBid(mainViewModel: MainViewModel, nftModel: NFTWithUserModel, e
 }
 
 @Composable
-fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel?) {
+fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel) {
     Surface(modifier = Modifier.fillMaxSize()) {
        Column {
 
@@ -223,11 +222,39 @@ fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel?)
                fontWeight = FontWeight.Light
            )
 
-           BidItem(mainViewModel, nftModel.nft.id)
+           mainViewModel.getBidsByNFT(nftModel.nft.id)
+           BidItemList(mainViewModel)
+
 
        }
     }
 }
+
+@Composable
+fun BidItemList(mainViewModel: MainViewModel) {
+
+    val bidList = mainViewModel.nftsByBid.value
+    if (bidList!=null) {
+
+        for (item in bidList) {
+            Column(Modifier.fillMaxWidth()) {
+                BidElement(item )
+                Spacer(modifier = Modifier.height(12.dp))
+                //Divider()
+            }
+        }
+
+    }
+    val context = LocalContext.current
+    showToast(context, bidList)
+    Log.d("Main", "Values ${bidList}")
+
+}
+
+fun showToast(context: Context, bidList: List<BidCacheEntity>?) {
+    Toast.makeText(context, "Values ${bidList?.size}", Toast.LENGTH_LONG).show()
+}
+
 
 @Composable
 fun NFTCardSmall(nftImage: String) {
@@ -359,67 +386,67 @@ fun updateETHValue(ethValue: Double, mainViewModel: MainViewModel?) {
     mainViewModel?.setBidETHValue(ethValue)
 }
 
-
-@Preview(showBackground = true)
-@Composable
-fun PlaceABidRootViewPreview() {
-    val nftModel = NFTModel(
-        id = 1,
-        nftName = "Nyan Cat",
-        creatorId = 1,
-        current_bid = 1.2,
-        nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
-        nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
-        created_at = ZonedDateTime.now(),
-        updated_at = ZonedDateTime.now()
-    )
-
-    val userModel = UserModel(
-        id = 1,
-        name = "Meta Kovan",
-        balance = 750,
-        bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
-        created_at = ZonedDateTime.now(),
-        updated_at = ZonedDateTime.now(),
-        publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
-    )
-
-    val nftWithUserModel = NFTWithUserModel(
-        nft = nftModel,
-        user = userModel
-    )
-    PlaceABidRootView(nftWithUserModel, null)
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview2() {
-    val nftModel = NFTModel(
-        id = 1,
-        nftName = "Nyan Cat",
-        creatorId = 1,
-        current_bid = 1.2,
-        nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
-        nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
-        created_at = ZonedDateTime.now(),
-        updated_at = ZonedDateTime.now()
-    )
-
-    val userModel = UserModel(
-        id = 1,
-        name = "Meta Kovan",
-        balance = 750,
-        bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
-        created_at = ZonedDateTime.now(),
-        updated_at = ZonedDateTime.now(),
-        publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
-    )
-
-    val nftWithUserModel = NFTWithUserModel(
-        nft = nftModel,
-        user = userModel
-    )
-    JetNFTTheme {
-        PlaceABidRootView(nftWithUserModel, null)
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun PlaceABidRootViewPreview() {
+//    val nftModel = NFTModel(
+//        id = 1,
+//        nftName = "Nyan Cat",
+//        creatorId = 1,
+//        current_bid = 1.2,
+//        nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
+//        nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
+//        created_at = ZonedDateTime.now(),
+//        updated_at = ZonedDateTime.now()
+//    )
+//
+//    val userModel = UserModel(
+//        id = 1,
+//        name = "Meta Kovan",
+//        balance = 750,
+//        bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
+//        created_at = ZonedDateTime.now(),
+//        updated_at = ZonedDateTime.now(),
+//        publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
+//    )
+//
+//    val nftWithUserModel = NFTWithUserModel(
+//        nft = nftModel,
+//        user = userModel
+//    )
+//    PlaceABidRootView(nftWithUserModel, null)
+//}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun DefaultPreview2() {
+//    val nftModel = NFTModel(
+//        id = 1,
+//        nftName = "Nyan Cat",
+//        creatorId = 1,
+//        current_bid = 1.2,
+//        nftDescription = "Nyan cat desctiption about an nft with a rainbow 8bit cat",
+//        nftImage = "https://raw.githubusercontent.com/sivansundar/JetNFT/master/app/src/main/res/drawable/nft_2.jpg",
+//        created_at = ZonedDateTime.now(),
+//        updated_at = ZonedDateTime.now()
+//    )
+//
+//    val userModel = UserModel(
+//        id = 1,
+//        name = "Meta Kovan",
+//        balance = 750,
+//        bio = "An early stage NFT lover | Digital Art | Doge to the Moon!",
+//        created_at = ZonedDateTime.now(),
+//        updated_at = ZonedDateTime.now(),
+//        publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
+//    )
+//
+//    val nftWithUserModel = NFTWithUserModel(
+//        nft = nftModel,
+//        user = userModel
+//    )
+//    JetNFTTheme {
+//        PlaceABidRootView(nftWithUserModel, )
+//    }
+//}

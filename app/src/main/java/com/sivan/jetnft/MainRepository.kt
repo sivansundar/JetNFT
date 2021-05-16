@@ -14,6 +14,8 @@ import com.sivan.jetnft.database.entity.BidCacheEntity
 
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.Exception
 
 
@@ -135,8 +137,14 @@ class MainRepository(
 
     }
 
+    suspend fun getAllBidsByNFT(nft_id: Long): Flow<List<BidCacheEntity>> {
+
+        val result = bidDao.getBidsByNFT(nft_id)
+        return result
+    }
+
     suspend fun getLatestBid(nft_id : Long): LiveData<BidCacheEntity> {
-        val latestBid = bidDao.getLatestBid(nft_id)
+        val latestBid = bidDao.getAllBids()
         Log.d("Repo" , "Latest ${latestBid.value}")
 
         return latestBid

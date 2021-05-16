@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,17 +19,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.accompanist.coil.rememberCoilPainter
 import com.google.accompanist.imageloading.ImageLoadState
+import com.sivan.jetnft.MainViewModel
 import com.sivan.jetnft.R
+import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.entity.toNFTModel
 import com.sivan.jetnft.database.entity.toUserModel
 import com.sivan.jetnft.database.model.NFTModel
 import com.sivan.jetnft.database.model.NFTWithUserModel
+import com.sivan.jetnft.util.toDateTimeString
 
 
 @Composable
@@ -48,6 +53,59 @@ fun NFTList(list: List<NFTWithUserCacheEntity>?) {
 
 }
 
+@Composable
+fun NoBidsYetText() {
+    Text(text = "No bids yet", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+}
+
+@Composable
+fun BidElement(item : BidCacheEntity) {
+    val BidBGDark = Color(0xFA242222)
+    val BidBGWhite = Color(0xFAF1ECEC)
+
+
+    Surface(modifier = Modifier
+
+        .padding(12.dp, 0.dp)
+        .clip(shape = RoundedCornerShape(18.dp))
+
+
+    ) {
+
+        Row(modifier = Modifier
+            .background(if (MaterialTheme.colors.isLight) BidBGWhite else BidBGDark)
+            .fillMaxWidth()
+            .padding(8.dp, 18.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly) {
+            ProfileButton(image_id = R.drawable.user_image)
+
+
+
+            Column(verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.height(36.dp)) {
+
+                Text(text = "Bid placed by Sivan",
+                    style = MaterialTheme.typography.subtitle2,
+                    fontWeight = FontWeight.SemiBold)
+
+                Text(text = item.created_at.toDateTimeString(),
+                    style = MaterialTheme.typography.subtitle2,
+                    fontWeight = FontWeight.Light)
+
+
+            }
+
+            Text(text = "${item.bidAmount} ETH",
+                style = MaterialTheme.typography.subtitle2,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(alignment = Alignment.CenterVertically))
+
+        }
+
+    }
+
+
+}
 @Composable
     fun NFTCard(item: NFTWithUserCacheEntity) {
         val lightGrey = Color(0xFFFAFAFA)

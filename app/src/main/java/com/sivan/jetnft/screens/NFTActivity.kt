@@ -35,19 +35,16 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import com.sivan.jetnft.MainViewModel
+import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
 import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
-import com.sivan.jetnft.util.toDateTimeString
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.time.ZoneId
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoField
-import java.time.temporal.ChronoUnit
-import java.util.*
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.lifecycleScope
+
 
 @AndroidEntryPoint
 class NFTActivity : ComponentActivity() {
@@ -61,7 +58,9 @@ class NFTActivity : ComponentActivity() {
 
         nftModel = intent.getParcelableExtra<NFTWithUserModel>("nft_model")!!
 
-
+//        lifecycleScope.launch(Dispatchers.Main) {
+//            mainViewModel.getLatestBid(nftModel.nft.id)
+//        }
 
         setContent {
             JetNFTTheme {
@@ -158,7 +157,7 @@ fun PlaceAButtonPreview() {
 }
 
 @Composable
-fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel?) {
+fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel) {
     Surface(color = MaterialTheme.colors.background, modifier = Modifier.wrapContentHeight()) {
     Column() {
         Box(modifier = Modifier
@@ -219,15 +218,9 @@ fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel
 
 
                 // Get latest bid from database and pass it on to the composable.
-                val coroutineContext = rememberCoroutineScope()
 
-                coroutineContext.launch(Dispatchers.IO) {
-                    if (mainViewModel != null) {
-                        getLatestBid(mainViewModel, nftModel.nft.id)
-                    }
-                }
 
-                BidItem(mainViewModel, nftModel.nft.id)
+                CurrentBid(mainViewModel, nftModel.nft.id)
 
 
             }
@@ -242,10 +235,22 @@ fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel
     }
 }
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun BidItem(mainViewModel: MainViewModel?, id: Long) {
-    val BidBGDark = Color(0xFA242222)
-    val BidBGWhite = Color(0xFAF1ECEC)
+fun CurrentBid(mainViewModel: MainViewModel, id: Long) {
+    val coroutineContext = rememberCoroutineScope()
+
+    coroutineContext.launch(Dispatchers.IO) {
+
+
+       // getLatestBid(mainViewModel, id)
+    }
+    //SingleBidItem(latestBid)
+}
+
+@Composable
+fun SingleBidItem(latestBid: BidCacheEntity?) {
+
 
 
     Surface(modifier = Modifier
@@ -258,37 +263,11 @@ fun BidItem(mainViewModel: MainViewModel?, id: Long) {
 
 
 
-        val latestBid = mainViewModel?._latestBid?.observeAsState()
-        if (latestBid?.value !=null) {
-            Row(modifier = Modifier
-                .background(if (MaterialTheme.colors.isLight) BidBGWhite else BidBGDark)
-                .fillMaxWidth()
-                .padding(8.dp, 18.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
-                ProfileButton(image_id = R.drawable.user_image)
 
-
-
-                Column(verticalArrangement = Arrangement.SpaceEvenly,
-                    modifier = Modifier.height(36.dp)) {
-
-                    Text(text = "Bid placed by Sivan",
-                        style = MaterialTheme.typography.subtitle2,
-                        fontWeight = FontWeight.SemiBold)
-
-                    Text(text = latestBid?.value?.created_at.toDateTimeString(),
-                        style = MaterialTheme.typography.subtitle2,
-                        fontWeight = FontWeight.Light)
-
-
-                }
-
-                Text(text = "${latestBid?.value?.bidAmount} ETH",
-                    style = MaterialTheme.typography.subtitle2,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.align(alignment = Alignment.CenterVertically))
-
-            }
+        if (latestBid !=null) {
+            BidElement(latestBid)
+        } else {
+            NoBidsYetText()
         }
 
 
@@ -297,15 +276,34 @@ fun BidItem(mainViewModel: MainViewModel?, id: Long) {
 }
 
 
-suspend fun getLatestBid(mainViewModel: MainViewModel, nft_id : Long) {
-    mainViewModel.getLatestBid(nft_id)
+@Composable
+fun BidItem(latestBid: BidCacheEntity?) {
+
+
+
+
+
+
+
+        if (latestBid !=null) {
+            BidElement(latestBid)
+        } else {
+            NoBidsYetText()
+        }
+
+
+
+
 }
+
+
+
 
 
 @Preview(showBackground = true)
 @Composable
 fun BidItemPreview(){
-    BidItem(null, 2)
+    BidItem(null)
 }
 
 
@@ -406,7 +404,7 @@ fun NFTActivityRootViewPreview(){
         nft = nftModel,
         user = userModel
     )
-    NFTActivityRootView(nftWithUserModel, null)
+    //NFTActivityRootView(nftWithUserModel, null)
 }
 
 @Composable
