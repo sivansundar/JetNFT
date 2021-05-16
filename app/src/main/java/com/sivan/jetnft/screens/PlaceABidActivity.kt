@@ -112,7 +112,7 @@ fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
             Box(modifier = Modifier
                 .background(color = Color.Black)
                 .clickable {
-                    if (ethBid.value !=null && ethBid.value!! > nftModel.nft.current_bid) {
+                    if (ethBid.value != null && ethBid.value!! > nftModel.nft.current_bid) {
                         showDialog.value = true
                     } else {
                         showDialog.value = false
@@ -187,6 +187,8 @@ fun ConfirmDialog(
     }
 }
 
+
+
 suspend fun placeBid(mainViewModel: MainViewModel, nftModel: NFTWithUserModel, ethValue: Double) {
     mainViewModel.placeBid(nftModel, ethValue)
 }
@@ -221,7 +223,7 @@ fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel?)
                fontWeight = FontWeight.Light
            )
 
-           BidItem()
+           BidItem(mainViewModel, nftModel.nft.id)
 
        }
     }

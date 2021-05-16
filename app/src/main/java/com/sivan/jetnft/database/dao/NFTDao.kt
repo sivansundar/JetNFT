@@ -22,6 +22,7 @@ interface NFTDao {
     @Query("SELECT * FROM nft")
     fun getAllNFT(): LiveData<List<NFTWithUserCacheEntity>>
 
+
     @Transaction
     @Query("UPDATE NFT SET current_bid = :value WHERE id = :id")
     suspend fun updateNFTCurrentValue(id : Long, value : Double): Int

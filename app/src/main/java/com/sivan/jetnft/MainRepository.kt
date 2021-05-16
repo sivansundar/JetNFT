@@ -134,4 +134,11 @@ class MainRepository(
 
 
     }
+
+    suspend fun getLatestBid(nft_id : Long): LiveData<BidCacheEntity> {
+        val latestBid = bidDao.getLatestBid(nft_id)
+        Log.d("Repo" , "Latest ${latestBid.value}")
+
+        return latestBid
+    }
 }

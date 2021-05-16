@@ -2,6 +2,7 @@ package com.sivan.jetnft
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.entity.NFTCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
@@ -37,6 +38,13 @@ class MainViewModel @Inject constructor(
    suspend fun placeBid(nftModel: NFTWithUserModel, ethValue: Double?) {
 
         mainRepository.postBid(nftModel, ethValue)
+    }
+
+    var _latestBid : LiveData<BidCacheEntity>? = null
+
+    suspend fun getLatestBid(nftId : Long) {
+        _latestBid = mainRepository.getLatestBid(nft_id = nftId)
+        Log.d("Repo", "Get latest bid : ${_latestBid?.value}")
     }
 
     init {

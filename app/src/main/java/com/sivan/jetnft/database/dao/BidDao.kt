@@ -3,8 +3,6 @@ package com.sivan.jetnft.database.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.sivan.jetnft.database.entity.BidCacheEntity
-import com.sivan.jetnft.database.entity.NFTCacheEntity
-import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 
 @Dao
 interface BidDao {
@@ -21,4 +19,8 @@ interface BidDao {
     @Transaction
     @Query("SELECT * FROM bids")
     fun getAllBids(): LiveData<List<BidCacheEntity>>
+
+    @Transaction
+    @Query("SELECT * FROM bids WHERE nft_id = :nft_id ORDER BY created_at DESC LIMIT 1")
+    fun getLatestBid(nft_id: Long): LiveData<BidCacheEntity>
 }
