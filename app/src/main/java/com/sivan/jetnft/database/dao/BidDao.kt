@@ -24,7 +24,7 @@ interface BidDao {
 
     @Transaction
     @Query("SELECT * FROM bids WHERE nft_id = :nft_id ORDER BY created_at DESC LIMIT 1")
-    fun getLatestBid(nft_id: Long): LiveData<BidCacheEntity>
+    fun getLatestBid(nft_id: Long): Flow<BidCacheEntity>
 
     @Transaction
     @Query("SELECT * FROM bids WHERE nft_id = :nft_id")

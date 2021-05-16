@@ -1,6 +1,8 @@
 package com.sivan.jetnft.screens
 
+import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -106,6 +108,70 @@ fun BidElement(item : BidCacheEntity) {
 
 
 }
+
+@Composable
+fun PlaceABidButton(item: NFTWithUserModel?) {
+    val context = LocalContext.current
+
+
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .padding(32.dp)) {
+        Card(elevation = 18.dp,
+            modifier = Modifier
+                .width(200.dp)
+                .height(60.dp)
+                .align(alignment = Alignment.Center)
+            ,
+            shape = CircleShape) {
+            Box(modifier = Modifier
+                .background(color = Color.Black)
+                .clickable {
+                    context.startActivity(
+                        Intent(context, PlaceABidActivity::class.java)
+                            .putExtra("nft_item", item)
+                    )
+                }) {
+                Text(text = "Place a bid",
+                    modifier = Modifier.align(alignment = Alignment.Center),
+                    color = Color.White)
+            }
+
+
+        }
+
+    }
+
+}
+
+@Composable
+fun BidItemList(mainViewModel: MainViewModel) {
+
+    val bidList = mainViewModel.nftsByBid.value
+    if (bidList!=null) {
+        if (bidList.isNotEmpty()) {
+            for (item in bidList) {
+                Column(Modifier.fillMaxWidth()) {
+                    BidElement(item )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    //Divider()
+                }
+            }
+        } else {
+            NoBidsYetText()
+        }
+    }
+
+    val context = LocalContext.current
+    showToast(context, bidList)
+    Log.d("Main", "Values ${bidList}")
+
+}
+
+fun showToast(context: Context, bidList: List<BidCacheEntity>?) {
+    Toast.makeText(context, "Values ${bidList?.size}", Toast.LENGTH_LONG).show()
+}
+
 @Composable
     fun NFTCard(item: NFTWithUserCacheEntity) {
         val lightGrey = Color(0xFFFAFAFA)

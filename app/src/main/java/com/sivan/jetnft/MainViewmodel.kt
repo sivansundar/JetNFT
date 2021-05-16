@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.entity.NFTCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
@@ -28,7 +29,6 @@ class MainViewModel @Inject constructor(
     var bidETH : LiveData<Double> = bidETHValue
 
     val nftsByBid : MutableState<List<BidCacheEntity>?> = mutableStateOf(listOf())
-
     fun getBidsByNFT(id : Long) {
         viewModelScope.launch {
             val result = mainRepository.getAllBidsByNFT(id)
@@ -36,6 +36,16 @@ class MainViewModel @Inject constructor(
                 nftsByBid.value = it
 
                 Log.d("VM", "NFTS : ${it}")
+            }
+        }
+    }
+
+    val latestBidByNFT : MutableState<List<BidCacheEntity>?> = mutableStateOf(listOf())
+    fun getLatestBidByNFT(id : Long) {
+        viewModelScope.launch {
+            val result = mainRepository.getLatestBid(id)
+            result.distinctUntilChanged().collect {
+                latestBidByNFT.value = listOf(it)
             }
         }
     }

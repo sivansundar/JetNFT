@@ -85,40 +85,7 @@ class NFTActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun PlaceABidButton(item: NFTWithUserModel?) {
-    val context = LocalContext.current
 
-
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(32.dp)) {
-        Card(elevation = 18.dp,
-            modifier = Modifier
-                .width(200.dp)
-                .height(60.dp)
-                .align(alignment = Alignment.Center)
-                ,
-        shape = CircleShape) {
-            Box(modifier = Modifier
-                .background(color = Color.Black)
-                .clickable {
-                    context.startActivity(
-                        Intent(context, PlaceABidActivity::class.java)
-                            .putExtra("nft_item", item)
-                    )
-                }) {
-                    Text(text = "Place a bid",
-                        modifier = Modifier.align(alignment = Alignment.Center),
-                        color = Color.White)
-                }
-
-
-        }
-
-    }
-
-}
 
 @Preview(showBackground = true)
 @Composable
@@ -218,86 +185,40 @@ fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel
 
 
                 // Get latest bid from database and pass it on to the composable.
-
-
                 CurrentBid(mainViewModel, nftModel.nft.id)
-
 
             }
         }
-
-
-
-
     }
-
-
-    }
+  }
 }
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun CurrentBid(mainViewModel: MainViewModel, id: Long) {
-    val coroutineContext = rememberCoroutineScope()
+    mainViewModel.getLatestBidByNFT(id)
+    val latestBid = mainViewModel.latestBidByNFT.value
 
-    coroutineContext.launch(Dispatchers.IO) {
-
-
-       // getLatestBid(mainViewModel, id)
+    if (latestBid != null) {
+        for (item in latestBid) {
+            BidItem(latestBid = item)
+        }
+    } else {
+        NoBidsYetText()
     }
     //SingleBidItem(latestBid)
-}
-
-@Composable
-fun SingleBidItem(latestBid: BidCacheEntity?) {
-
-
-
-    Surface(modifier = Modifier
-
-        .padding(12.dp, 0.dp)
-        .clip(shape = RoundedCornerShape(18.dp))
-
-
-    ) {
-
-
-
-
-        if (latestBid !=null) {
-            BidElement(latestBid)
-        } else {
-            NoBidsYetText()
-        }
-
-
-    }
-
 }
 
 
 @Composable
 fun BidItem(latestBid: BidCacheEntity?) {
 
-
-
-
-
-
-
         if (latestBid !=null) {
             BidElement(latestBid)
         } else {
             NoBidsYetText()
         }
 
-
-
-
 }
-
-
-
 
 
 @Preview(showBackground = true)

@@ -111,11 +111,7 @@ fun ConfirmButton(mainViewModel: MainViewModel, nftModel: NFTWithUserModel) {
             Box(modifier = Modifier
                 .background(color = Color.Black)
                 .clickable {
-                    if (ethBid.value != null && ethBid.value!! > nftModel.nft.current_bid) {
-                        showDialog.value = true
-                    } else {
-                        showDialog.value = false
-                    }
+                    showDialog.value = ethBid.value != null && ethBid.value!! > nftModel.nft.current_bid
 
                 }
             ) {
@@ -230,30 +226,7 @@ fun PlaceABidRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel) 
     }
 }
 
-@Composable
-fun BidItemList(mainViewModel: MainViewModel) {
 
-    val bidList = mainViewModel.nftsByBid.value
-    if (bidList!=null) {
-
-        for (item in bidList) {
-            Column(Modifier.fillMaxWidth()) {
-                BidElement(item )
-                Spacer(modifier = Modifier.height(12.dp))
-                //Divider()
-            }
-        }
-
-    }
-    val context = LocalContext.current
-    showToast(context, bidList)
-    Log.d("Main", "Values ${bidList}")
-
-}
-
-fun showToast(context: Context, bidList: List<BidCacheEntity>?) {
-    Toast.makeText(context, "Values ${bidList?.size}", Toast.LENGTH_LONG).show()
-}
 
 
 @Composable
