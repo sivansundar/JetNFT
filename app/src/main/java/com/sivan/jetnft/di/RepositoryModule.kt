@@ -4,6 +4,7 @@ import android.content.Context
 import com.sivan.jetnft.MainRepository
 import com.sivan.jetnft.database.NFTDatabase
 import com.sivan.jetnft.database.dao.BidDao
+import com.sivan.jetnft.database.dao.FavouritesDao
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
 import dagger.Module
@@ -24,6 +25,7 @@ object RepositoryModule {
         nftDao: NFTDao,
         userDao: UserDao,
         bidDao : BidDao,
+        favouritesDao: FavouritesDao,
         @ApplicationContext context: Context
     )  : MainRepository {
         return MainRepository(
@@ -31,6 +33,7 @@ object RepositoryModule {
             nftDao,
             userDao,
             bidDao,
+            favouritesDao,
             context
 
         )

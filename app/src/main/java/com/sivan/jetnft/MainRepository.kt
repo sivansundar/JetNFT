@@ -4,18 +4,18 @@ import androidx.lifecycle.LiveData
 import com.sivan.jetnft.database.NFTDatabase
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
-import com.sivan.jetnft.database.entity.NFTCacheEntity
-import com.sivan.jetnft.database.entity.UserCacheEntity
 import java.time.ZonedDateTime
 import android.content.Context
 import android.util.Log
 import com.sivan.jetnft.database.dao.BidDao
-import com.sivan.jetnft.database.entity.BidCacheEntity
+import com.sivan.jetnft.database.dao.FavouritesDao
+import com.sivan.jetnft.database.entity.*
+import com.sivan.jetnft.database.model.FavouritesModel
 
-import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
+import com.sivan.jetnft.database.model.toFavouritesCacheEntity
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlin.Exception
 
 
@@ -24,6 +24,7 @@ class MainRepository(
     private val nftDao: NFTDao,
     private val userDao: UserDao,
     private val bidDao: BidDao,
+    private val favouritesDao: FavouritesDao,
     private val context : Context
 
 ) {
@@ -37,9 +38,8 @@ class MainRepository(
 
     suspend fun postUser(){
 
-
-// Add user image
         val userList = listOf<UserCacheEntity>(
+
             UserCacheEntity(
             id = 1,
             name = "Meta Kovan",
@@ -48,7 +48,7 @@ class MainRepository(
             created_at = ZonedDateTime.now(),
             updated_at = ZonedDateTime.now(),
             publicKey = "0xasd50a498asfa2sa516a8s51da68sf41a3s21da6"
-        ),
+            ),
 
             UserCacheEntity(
                 id = 2,
@@ -148,5 +148,33 @@ class MainRepository(
         Log.d("Repo" , "Latest ${latestBid}")
 
         return latestBid
+    }
+
+
+    suspend fun getFavouritesList(): Flow<List<FavouritesCacheEntity>> {
+        val favouritesList = favouritesDao.getFavouritesList()
+        Log.d("Repo" , "Latest ${favouritesList}")
+
+        return favouritesList
+    }
+
+    suspend fun isNftFavourite(nft_id: Long): Boolean {
+        val fav = favouritesDao.exists(nft_id)
+        return fav
+
+    }
+
+    suspend fun addFavouriteItem(nftId: Long) {
+
+        val favouriteItem = FavouritesModel(
+            nft_id = nftId,
+            created_at = ZonedDateTime.now(),
+            updated_at = ZonedDateTime.now()
+        )
+        val insertFavouriteItem = favouritesDao.insert(favouriteItem.toFavouritesCacheEntity())
+    }
+
+    suspend fun removeFavouriteItem(nftId: Long) {
+        val deleteFavouriteItem = favouritesDao.deleteFavourite(nftId)
     }
 }

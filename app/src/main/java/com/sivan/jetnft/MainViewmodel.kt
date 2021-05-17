@@ -6,13 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sivan.jetnft.database.entity.BidCacheEntity
-import com.sivan.jetnft.database.entity.NFTCacheEntity
+import com.sivan.jetnft.database.entity.FavouritesCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.model.NFTWithUserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -50,6 +48,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    val isNFTFavourite : MutableState<Boolean> = mutableStateOf(false)
+    fun checkNFTFavourite(id : Long) {
+        viewModelScope.launch {
+            val result = mainRepository.isNftFavourite(id)
+            isNFTFavourite.value = result
+        }
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             mainRepository.postUser()
@@ -67,6 +73,19 @@ class MainViewModel @Inject constructor(
 
    suspend fun placeBid(nftModel: NFTWithUserModel, ethValue: Double?) {
        mainRepository.postBid(nftModel, ethValue)
+    }
+
+    fun addToFavourites(nftId : Long) {
+        viewModelScope.launch {
+            mainRepository.addFavouriteItem(nftId)
+        }
+
+   }
+
+    fun removeFromFavourites(nft_id: Long) {
+        viewModelScope.launch {
+            mainRepository.removeFavouriteItem(nft_id)
+        }
     }
 
 }

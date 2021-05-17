@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.sivan.jetnft.database.NFTDatabase
 import com.sivan.jetnft.database.dao.BidDao
+import com.sivan.jetnft.database.dao.FavouritesDao
 import com.sivan.jetnft.database.dao.NFTDao
 import com.sivan.jetnft.database.dao.UserDao
 import dagger.Module
@@ -45,6 +46,12 @@ object RoomModule {
     @Provides
     fun provideBidDao(nftDatabase: NFTDatabase) : BidDao {
         return nftDatabase.bidDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFavouritesDao(nftDatabase: NFTDatabase) : FavouritesDao {
+        return nftDatabase.favouritesDao()
     }
 
 

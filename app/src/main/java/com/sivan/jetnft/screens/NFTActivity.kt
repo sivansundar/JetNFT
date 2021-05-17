@@ -3,7 +3,6 @@ package com.sivan.jetnft.screens
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.sivan.jetnft.R
 import com.sivan.jetnft.database.model.NFTModel
 import java.time.ZonedDateTime
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import com.sivan.jetnft.MainViewModel
@@ -40,10 +38,7 @@ import com.sivan.jetnft.database.model.NFTWithUserModel
 import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.ui.theme.JetNFTTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.lifecycleScope
 
 
 @AndroidEntryPoint
@@ -154,11 +149,33 @@ fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel
                 user = nftModel.user
             )
 
+
+
+            mainViewModel.checkNFTFavourite(nftModel.nft.id)
+            val isNFTFavourite = mainViewModel.isNFTFavourite.value
+            var liked by remember { mutableStateOf(false) }
+            liked = isNFTFavourite
+
+
             HeartButton(surfaceModifier = Modifier
                 .wrapContentSize()
                 .padding(24.dp, 24.dp)
                 .clip(shape = CircleShape)
-                .align(alignment = Alignment.BottomEnd))
+                .align(alignment = Alignment.BottomEnd),
+
+                onClick = {
+                    liked = !liked
+
+                    if (liked) {
+                        // Add to favourites
+                        mainViewModel.addToFavourites(nftModel.nft.id)
+                    } else {
+                        // Remove from favourites
+                        mainViewModel.removeFromFavourites(nftModel.nft.id)
+
+                    }
+            },
+                    liked = liked)
         }
 
         Box() {
@@ -230,9 +247,9 @@ fun BidItemPreview(){
 
 @SuppressLint("UnusedCrossfadeTargetStateParameter")
 @Composable
-fun HeartButton(surfaceModifier: Modifier) {
+fun HeartButton(surfaceModifier: Modifier, onClick: () -> Unit, liked : Boolean) {
 
-    var liked by remember { mutableStateOf(false) }
+    //var liked by remember { mutableStateOf(false) }
 
     var isLiked  = (if (liked) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder)
     Surface(modifier = surfaceModifier
@@ -240,7 +257,10 @@ fun HeartButton(surfaceModifier: Modifier) {
         Card(modifier = Modifier
             .size(48.dp)
             .background(Color.Transparent)
-            .clickable { liked = !liked },
+            .clickable {
+               // liked = !liked
+                onClick()
+                       },
             shape = CircleShape) {
 
 
