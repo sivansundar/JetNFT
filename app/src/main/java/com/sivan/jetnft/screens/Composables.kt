@@ -12,7 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +32,7 @@ import com.sivan.jetnft.database.entity.BidCacheEntity
 import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
 import com.sivan.jetnft.database.entity.toNFTModel
 import com.sivan.jetnft.database.entity.toUserModel
-import com.sivan.jetnft.database.model.NFTModel
+import com.sivan.jetnft.database.model.FavouritesWithNFTModel
 import com.sivan.jetnft.database.model.NFTWithUserModel
 import com.sivan.jetnft.util.toDateTimeString
 
@@ -260,6 +259,7 @@ fun NFTNameText(modifier: Modifier, name : String) {
         text = name,
         style = MaterialTheme.typography.h5,
         fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
         modifier = modifier)
 }
 
@@ -374,23 +374,117 @@ fun NFTImageCard(image : String, modifier: Modifier) {
                     .fillMaxSize()
                     )
 
-            when(painter.loadState) {
-                ImageLoadState.Loading -> {
-                    // Display a circular progress indicator whilst loading
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colors.primary,
-                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
-                }
-
-                is ImageLoadState.Error -> {
-                    // If
-                // you wish to display some content if the request fails
-                }
-            }
+//            when(painter.loadState) {
+//                ImageLoadState.Loading -> {
+//                    // Display a circular progress indicator whilst loading
+//                    CircularProgressIndicator(
+//                        color = MaterialTheme.colors.primary,
+//                        modifier = Modifier.align(alignment = Alignment.CenterHorizontally))
+//                }
+//
+//                is ImageLoadState.Error -> {
+//                    // If
+//                // you wish to display some content if the request fails
+//                }
+//            }
         }
     }
 
 
+}
+
+@Composable
+fun FavouriteItem(
+    item: FavouritesWithNFTModel) {
+    Card(
+        modifier = Modifier
+            .padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .border(width = 2.dp, color = MaterialTheme.colors.primary, shape = RoundedCornerShape(20.dp))
+            .clickable {
+
+            },
+        elevation = 8.dp,
+
+    ) {
+
+        Row(modifier = Modifier.wrapContentSize()) {
+            Box(
+                modifier = Modifier.height(180.dp).padding(12.dp),
+
+            ) {
+                Text(
+                    text = item.nftItem.nftName,
+                    style = MaterialTheme.typography.h6,
+                    modifier = Modifier
+                        .padding(start = 8.dp, end = 8.dp)
+                        .width(120.dp)
+                        .align(alignment = Alignment.Center),
+
+                    fontWeight = FontWeight.SemiBold
+                )
+
+                // CreatorCard(modifier = Modifier.wrapContentSize(), name = "Elon Musk")
+            }
+            Image(
+                painterResource(id = R.drawable.nft_4),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 120.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 0.dp,
+                            bottomEnd = 20.dp
+                        )
+                    )
+            )
+        }
+    }
+}
+
+@Composable
+fun TitleAndDescription() {
+    Column(
+
+    ) {
+        Text(
+            text = "Title",
+            fontSize = 16.sp,
+            modifier = Modifier
+                .paddingFromBaseline(top = 24.dp)
+        )
+
+        Text(
+            text = "This is a description",
+            fontSize = 16.sp,
+            modifier = Modifier
+                .paddingFromBaseline(bottom = 24.dp),
+        )
+    }
+}
+
+@Composable
+fun NFTImage() {
+    Image(
+        painterResource(id = R.drawable.nft_4),
+        contentDescription = "nft_image",
+        contentScale = ContentScale.Crop,
+        modifier = Modifier
+            .width(64.dp)
+            .fillMaxHeight()
+
+    )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun favouriteItemPreview(){
+   // FavouriteItem(item)
 }
 
 

@@ -5,10 +5,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sivan.jetnft.database.entity.BidCacheEntity
-import com.sivan.jetnft.database.entity.FavouritesCacheEntity
-import com.sivan.jetnft.database.entity.NFTWithUserCacheEntity
+import com.sivan.jetnft.database.entity.*
+import com.sivan.jetnft.database.model.FavouritesWithNFTModel
 import com.sivan.jetnft.database.model.NFTWithUserModel
+import com.sivan.jetnft.database.model.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -21,8 +21,11 @@ class MainViewModel @Inject constructor(
     private val mainRepository: MainRepository
 ) : ViewModel() {
 
-    var getAllNFT: LiveData<List<NFTWithUserCacheEntity>>? = null
+    val currentScreen : MutableState<String> = mutableStateOf("home")
 
+
+    var getAllNFT: LiveData<List<NFTWithUserCacheEntity>>? = null
+    var currentUser : LiveData<UserCacheEntity>? = null
     var bidETHValue: MutableLiveData<Double> = MutableLiveData()
     var bidETH : LiveData<Double> = bidETHValue
 
@@ -56,10 +59,23 @@ class MainViewModel @Inject constructor(
         }
     }
 
+
+    val favouriteNFTList : MutableState<List<FavouritesWithNFTModel>> = mutableStateOf(listOf())
+    fun getFavouritesList() {
+        viewModelScope.launch {
+            val result = mainRepository.getFavouritesList()
+            result.distinctUntilChanged().collect {
+                favouriteNFTList.value = it.toModel()
+            }
+
+        }
+    }
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             mainRepository.postUser()
             mainRepository.postNFTs()
+            currentUser = mainRepository.getCurrentUser()
 
             getAllNFT = mainRepository.getNFTs()
 

@@ -1,5 +1,6 @@
 package com.sivan.jetnft.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,4 +19,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :id")
     suspend fun getUser(id : Long) : UserCacheEntity
+
+    @Query("SELECT * FROM users WHERE id = :id")
+    fun getUserAsLiveData(id : Long) : LiveData<UserCacheEntity>
 }

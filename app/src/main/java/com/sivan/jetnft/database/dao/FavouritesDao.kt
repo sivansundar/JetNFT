@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.sivan.jetnft.database.entity.FavouritesCacheEntity
 import androidx.room.Delete
+import com.sivan.jetnft.database.entity.FavouritesWithNFTCacheEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,7 +20,7 @@ interface FavouritesDao {
 
     @Transaction
     @Query("SELECT * FROM favourites")
-    fun getFavouritesList(): Flow<List<FavouritesCacheEntity>>
+    fun getFavouritesList(): Flow<List<FavouritesWithNFTCacheEntity>>
 
 //    @Transaction
 //    @Query("SELECT * FROM favourites where nft_id = :nft_id")

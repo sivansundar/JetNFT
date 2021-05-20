@@ -13,9 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sivan.jetnft.MainViewModel
@@ -50,8 +52,12 @@ fun HomeRootView(mainViewModel: MainViewModel) {
         color = if (MaterialTheme.colors.isLight) LightWhite else MaterialTheme.colors.background) {
         Column(modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)) {
-            CustomAppBar()
+            .padding(horizontal = 24.dp)) {
+
+            Text(text = "Home",
+                style = MaterialTheme.typography.h3,
+                fontWeight = FontWeight.SemiBold)
+
             Spacer(modifier = Modifier.height(24.dp))
 
 //            LaunchedEffect(key1 = 1, block = {
@@ -70,10 +76,9 @@ fun HomeRootView(mainViewModel: MainViewModel) {
 
 
 @Composable
-fun CustomAppBar() {
+fun CustomAppBar(modifier: Modifier) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = modifier ,
 
 
     ) {
@@ -141,7 +146,10 @@ fun PriceSection(image_id : Int) {
 @Preview(showBackground = true)
 @Composable
 fun CustomAppBarPreview() {
-    CustomAppBar()
+    CustomAppBar(
+        modifier = Modifier
+            .fillMaxWidth()
+    )
 }
 
 @Composable

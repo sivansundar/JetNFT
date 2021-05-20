@@ -13,6 +13,7 @@ import com.sivan.jetnft.database.entity.*
 import com.sivan.jetnft.database.model.FavouritesModel
 
 import com.sivan.jetnft.database.model.NFTWithUserModel
+import com.sivan.jetnft.database.model.UserModel
 import com.sivan.jetnft.database.model.toFavouritesCacheEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
@@ -29,7 +30,11 @@ class MainRepository(
 
 ) {
 
+    suspend fun getCurrentUser(): LiveData<UserCacheEntity> {
+        val user = userDao.getUserAsLiveData(3)
 
+        return user
+    }
 
    suspend fun getNFTs(): LiveData<List<NFTWithUserCacheEntity>> {
 
@@ -151,7 +156,7 @@ class MainRepository(
     }
 
 
-    suspend fun getFavouritesList(): Flow<List<FavouritesCacheEntity>> {
+    suspend fun getFavouritesList(): Flow<List<FavouritesWithNFTCacheEntity>> {
         val favouritesList = favouritesDao.getFavouritesList()
         Log.d("Repo" , "Latest ${favouritesList}")
 

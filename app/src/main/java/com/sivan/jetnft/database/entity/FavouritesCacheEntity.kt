@@ -9,11 +9,14 @@ import com.sivan.jetnft.database.model.NFTModel
 import java.time.ZonedDateTime
 
 @Entity(tableName = "favourites",
-    foreignKeys = [ForeignKey(entity = NFTCacheEntity::class,
+    foreignKeys = [
+        ForeignKey(entity = NFTCacheEntity::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("nft_id"),
         onDelete = ForeignKey.CASCADE
-    )])
+    )]
+
+)
 data class FavouritesCacheEntity(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,

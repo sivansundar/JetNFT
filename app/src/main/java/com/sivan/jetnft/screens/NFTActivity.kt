@@ -181,19 +181,19 @@ fun NFTActivityRootView(nftModel: NFTWithUserModel, mainViewModel: MainViewModel
         Box() {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                NFTNameText(modifier = Modifier.padding(horizontal = 24.dp),
+                NFTNameText(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                     name = nftModel.nft.nftName)
 
-
-                Text(text = "DESCRIPTION", style = MaterialTheme.typography.subtitle2,
-                    color = Color.Gray,
-                    modifier = Modifier.padding(24.dp, 12.dp),
-                    fontWeight = FontWeight.Light)
+                Spacer(modifier = Modifier.height(18.dp))
 
                 Text(text = nftModel.nft.nftDescription,
                     style = MaterialTheme.typography.subtitle2,
                     modifier = Modifier.padding(24.dp, 0.dp),
                     fontWeight = FontWeight.Bold)
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Text(text = "CURRENT BID", style = MaterialTheme.typography.subtitle2,
                     color = Color.Gray,
@@ -258,9 +258,9 @@ fun HeartButton(surfaceModifier: Modifier, onClick: () -> Unit, liked : Boolean)
             .size(48.dp)
             .background(Color.Transparent)
             .clickable {
-               // liked = !liked
+                // liked = !liked
                 onClick()
-                       },
+            },
             shape = CircleShape) {
 
 
